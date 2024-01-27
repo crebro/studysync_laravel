@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\QuestionBankController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -43,4 +44,17 @@ Route::resource(
     ['except' => ['index', 'create', 'edit', 'show']]
 )->middleware('auth:sanctum');
 
+Route::get('/question_banks/available', [QuestionBankController::class, 'availableQuestionBanks'])->middleware('auth:sanctum');
+
+Route::resource(
+    'question_banks',
+    QuestionBankController::class,
+    ['except' => ['index', 'create', 'edit']]
+)->middleware('auth:sanctum');
+
 Route::post('/invitation/join', [SpacesController::class, 'invitationJoin'])->middleware('auth:sanctum');
+
+Route::post('/question_banks/{id}/complete', [QuestionBankController::class, 'markSession'])->middleware('auth:sanctum');
+Route::get('/question_banks/user/streak_details', [QuestionBankController::class, 'streakDetails'])->middleware('auth:sanctum');
+
+

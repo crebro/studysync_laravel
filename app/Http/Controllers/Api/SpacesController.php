@@ -69,7 +69,7 @@ class SpacesController extends Controller
         return response()->json([
             'space' => $space,
             'notes' => $space->notes,
-            'question_banks' => $space->question_banks
+            'question_banks' => $space->questionBanks
         ], 200);
         //
     }

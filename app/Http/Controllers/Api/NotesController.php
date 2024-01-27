@@ -33,6 +33,7 @@ class NotesController extends Controller
         $this->validate($request, [
             'title' => 'required|string',
             'space_id' => 'required|integer',
+            'document' => 'required|file',
         ]);
 
         // generate a random string and append the extension of the file to it
