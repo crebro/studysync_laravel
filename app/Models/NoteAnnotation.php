@@ -8,4 +8,13 @@ use Illuminate\Database\Eloquent\Model;
 class NoteAnnotation extends Model
 {
     use HasFactory;
+
+    protected $fillable = [
+        'note_id',
+        'creator_id',
+        'annotation_identifier',
+        'content',
+        'page',
+        'yloc',
+    ];
 }

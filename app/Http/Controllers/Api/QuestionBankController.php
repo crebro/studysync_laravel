@@ -4,16 +4,19 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Note;
+use App\Models\QuestionBank;
 use Illuminate\Http\Request;
 use Auth;
 
-class NotesController extends Controller
+class QuestionBankController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $id)
     {
+
+
         //
     }
 
@@ -31,27 +34,19 @@ class NotesController extends Controller
     public function store(Request $request)
     {
         $this->validate($request, [
-            'title' => 'required|string',
+            'name' => 'required|string',
             'space_id' => 'required|integer',
         ]);
 
-        // generate a random string and append the extension of the file to it
-        $document = \Str::random(10) . '.' . $request->file('document')->extension();
-        // use this filename to save the file in the storage/app/public directory
-        $request->file('document')->storeAs('public', $document);
-
-        // the the location of the document and store it in location column
-
         $note = new Note([
-            'title' => $request->title,
-            'location' => $document,
+            'name' => $request->name,
             'space_id' => $request->space_id,
             'creator_id' => Auth::user()->id,
         ]);
 
         if ($note->save()) {
             return response()->json([
-                'message' => 'Successfully created note!',
+                'message' => 'Successfully created Question Bank!',
                 'note' => $note,
             ], 201);
         } else {
@@ -66,8 +61,9 @@ class NotesController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $questionBank = QuestionBank::where('id', $id)->firstOrFail();
 
+        return ['question_bank' => $questionBank, 'questions' => $questionBank->questions];
     }
 
     /**
@@ -88,13 +84,13 @@ class NotesController extends Controller
             'title' => 'string',
         ]);
 
-        $note = Note::where('note_identifier', $id)->firstOrFail();
-        $note->update($request->all());
+        $question_bank = QuestionBank::where('id', $id)->firstOrFail();
+        $question_bank->update($request->all());
 
-        if ($note->save()) {
+        if ($question_bank->save()) {
             return response()->json([
                 'message' => 'Successfully updated note!',
-                'note' => $note,
+                'question_bank' => $question_bank
             ], 201);
         } else {
             return response()->json(['error' => 'Provide proper details']);
@@ -106,17 +102,8 @@ class NotesController extends Controller
      */
     public function destroy(string $id)
     {
-        $note = Note::where('note_identifier', $id)->firstOrFail();
-        $note->delete();
+        $qb = QuestionBank::where('id', $id)->firstOrFail();
+        $qb->delete();
         //
-    }
-
-    public function annotateNote(string $uuid)
-    {
-        $note = Note::where('note_identifier', $uuid)->firstOrFail();
-        $annotations = $note->annotations;
-        return response()->json([
-            'annotations' => $annotations,
-        ], 200);
     }
 }

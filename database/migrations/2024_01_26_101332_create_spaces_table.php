@@ -14,6 +14,7 @@ return new class extends Migration {
             $table->id();
             $table->string("name");
             $table->string("description")->nullable();
+            $table->string("invitation_code")->unique();
             $table->string("space_identifier")->unique();
             $table->unsignedBigInteger("creator_id");
             $table->foreign("creator_id")->references("id")->on("users")->cascadeOnDelete();

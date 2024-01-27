@@ -11,7 +11,7 @@ use Auth;
 class UserController extends Controller
 {
 
-    public function signup(Request $request)
+    public function register(Request $request)
     {
         $request->validate([
             'name' => 'required|string',
@@ -31,7 +31,8 @@ class UserController extends Controller
 
             return response()->json([
                 'message' => 'Successfully created user!',
-                'accessToken' => $token,
+                'token' => $token,
+                'user' => $user,
             ], 201);
         } else {
             return response()->json(['error' => 'Provide proper details']);
@@ -58,7 +59,8 @@ class UserController extends Controller
         $token = $tokenResult->plainTextToken;
 
         return response()->json([
-            'accessToken' => $token,
+            'user' => $user,
+            'token' => $token,
             'token_type' => 'Bearer',
         ]);
     }

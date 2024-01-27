@@ -14,6 +14,12 @@ class SpacesController extends Controller
      */
     public function index()
     {
+        // show the authenticated user's spaces
+        $spaces = Auth::user()->spaces;
+
+        return response()->json([
+            'spaces' => $spaces,
+        ], 200);
         //
     }
 
@@ -39,8 +45,10 @@ class SpacesController extends Controller
             'name' => $request->name,
             'description' => $request->description,
             'space_identifier' => \Str::random(10),
+            'invitation_code' => \Str::random(50),
             'creator_id' => Auth::user()->id,
         ]);
+        Auth::user()->spaces()->save($space);
 
         if ($space->save()) {
             return response()->json([
@@ -60,6 +68,8 @@ class SpacesController extends Controller
         $space = Space::where('space_identifier', $id)->firstOrFail();
         return response()->json([
             'space' => $space,
+            'notes' => $space->notes,
+            'question_banks' => $space->question_banks
         ], 200);
         //
     }
@@ -107,6 +117,29 @@ class SpacesController extends Controller
 
         return response()->json([
             'message' => 'Successfully deleted space!',
+        ], 201);
+    }
+
+    public function invitationJoin(Request $request)
+    {
+        $space = Space::where('invitation_code', $request->invitation_code)->firstOrFail();
+        if (!$space) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Space not found!',
+            ], 404);
+        }
+        if (Auth::user()->spaces->contains($space)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'You are already a member of this space!',
+            ], 400);
+        }
+        Auth::user()->spaces()->attach($space->id);
+
+        return response()->json([
+            'message' => 'Successfully joined space!',
+            'success' => true,
         ], 201);
     }
 }
